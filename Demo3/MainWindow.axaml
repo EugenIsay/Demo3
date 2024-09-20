@@ -1,0 +1,36 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
+		WindowStartupLocation="CenterOwner"
+        x:Class="Demo3.MainWindow"
+        Title="Demo3">
+	<DockPanel>
+		<ListBox Name="ProductList">
+			<ListBox.ItemsPanel>
+				<ItemsPanelTemplate>
+					<WrapPanel Orientation="Horizontal" />
+				</ItemsPanelTemplate>
+			</ListBox.ItemsPanel>
+			<ListBox.ItemTemplate>
+				<DataTemplate>
+					<Border Background="{Binding Color}" Height="300" Width="250"  BorderBrush="Gray" BorderThickness="2">
+						<Grid Margin="10" RowDefinitions="6*, 4*">
+							<DockPanel Grid.Row="0">
+								<Image Source="{Binding Image}"/>
+							</DockPanel>
+							<StackPanel Orientation="Vertical" Grid.Row="1">
+								<TextBlock TextWrapping="Wrap" Text="{Binding Title}"/>
+								<TextBlock Text="{Binding Cost}"/>
+								<TextBlock IsVisible="{Binding Active}" Text="Активный"/>
+								<TextBlock IsVisible="{Binding !Active}" Text="Неактивный"/>
+								<TextBlock/>
+							</StackPanel>
+						</Grid>
+					</Border>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
+	</DockPanel>
+</Window>
