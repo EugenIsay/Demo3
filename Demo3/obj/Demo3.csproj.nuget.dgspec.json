@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\prdb\\Desktop\\IsayProj\\Demo3\\Demo3.csproj": {}
+    "C:\\Users\\Class_Student\\Desktop\\IsayProj\\Demo3\\Demo3\\Demo3.csproj": {}
   },
   "projects": {
-    "C:\\Users\\prdb\\Desktop\\IsayProj\\Demo3\\Demo3.csproj": {
+    "C:\\Users\\Class_Student\\Desktop\\IsayProj\\Demo3\\Demo3\\Demo3.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\prdb\\Desktop\\IsayProj\\Demo3\\Demo3.csproj",
+        "projectUniqueName": "C:\\Users\\Class_Student\\Desktop\\IsayProj\\Demo3\\Demo3\\Demo3.csproj",
         "projectName": "Demo3",
-        "projectPath": "C:\\Users\\prdb\\Desktop\\IsayProj\\Demo3\\Demo3.csproj",
-        "packagesPath": "C:\\Users\\prdb\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\prdb\\Desktop\\IsayProj\\Demo3\\obj\\",
+        "projectPath": "C:\\Users\\Class_Student\\Desktop\\IsayProj\\Demo3\\Demo3\\Demo3.csproj",
+        "packagesPath": "C:\\Users\\Class_Student\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Class_Student\\Desktop\\IsayProj\\Demo3\\Demo3\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\prdb\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Class_Student\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -100,7 +100,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.203/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.200/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

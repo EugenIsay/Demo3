@@ -18,7 +18,17 @@ public partial class Product
 
     public Bitmap Image
     {
-        get => new Bitmap($"{Environment.CurrentDirectory}/{Mainimagepath}");
+        get
+        {
+            try
+            {
+                return new Bitmap($"{Environment.CurrentDirectory}/{Mainimagepath}");
+            }
+            catch (Exception) 
+            {
+                return new Bitmap($"{Environment.CurrentDirectory}/SchoolSupplies/no-img.png");
+            }
+        }
     }
 
     public int Isactive { get; set; }

@@ -7,7 +7,19 @@
         x:Class="Demo3.MainWindow"
         Title="Demo3">
 	<DockPanel>
-		<ListBox Name="ProductList">
+		<Button DockPanel.Dock="Bottom" Content="Добавить товар" Click="Add"/>
+		<TextBox Name="Search" DockPanel.Dock="Top" HorizontalAlignment="Stretch"/>
+		<Grid DockPanel.Dock="Top" ColumnDefinitions="*,*,*">
+			<TextBlock Name="Amount" Grid.Column="0"/>
+			<ComboBox SelectionChanged="SelectionChanged" Name="Filtr" HorizontalAlignment="Stretch" Grid.Column="1"/>
+			<ComboBox SelectionChanged="SelectionChanged" Name="Sort" HorizontalAlignment="Stretch" Grid.Column="2">
+				<ComboBoxItem>Без сортировки</ComboBoxItem>
+				<ComboBoxItem>По возрастанию цены</ComboBoxItem>
+				<ComboBoxItem>По убыванию цены</ComboBoxItem>
+			</ComboBox>
+		</Grid>
+
+		<ListBox Margin="5" DockPanel.Dock="Top" Name="ProductList">
 			<ListBox.ItemsPanel>
 				<ItemsPanelTemplate>
 					<WrapPanel Orientation="Horizontal" />
@@ -15,7 +27,7 @@
 			</ListBox.ItemsPanel>
 			<ListBox.ItemTemplate>
 				<DataTemplate>
-					<Border Background="{Binding Color}" Height="300" Width="250"  BorderBrush="Gray" BorderThickness="2">
+					<Border DoubleTapped="Change" Tag="{Binding Id}" Background="{Binding Color}" Height="300" Width="250"  BorderBrush="Gray" BorderThickness="2">
 						<Grid Margin="10" RowDefinitions="6*, 4*">
 							<DockPanel Grid.Row="0">
 								<Image Source="{Binding Image}"/>
