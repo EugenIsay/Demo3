@@ -4,12 +4,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
         x:Class="Demo3.EditWindow"
+		Background="#ffffff"
+		WindowState="Maximized"
         Title="EditWindow">
 	<DockPanel>
-		<Grid DockPanel.Dock="Bottom">
+		<DockPanel DockPanel.Dock="Bottom">
 			<Button Click="Comfirm"  Content="Готово" />
-			<Button />
-		</Grid>
+			<Button Content="Выйти" Click="Exit"/>
+			<Button Content="Посмотреть товары" Name="SalesButton" IsVisible="True" Click="Button_Click_1"/>
+		</DockPanel>
 		<Grid ColumnDefinitions="2*, 4*">
 			<Grid ColumnDefinitions="*,*,*,*" RowDefinitions="*,*,*,*">
 				<Border BorderBrush="Black" BorderThickness="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Grid.RowSpan="2" >
@@ -24,7 +27,10 @@
 				<TextBlock Grid.Column="0" Grid.Row="3" Text="Описание"/>
 				<TextBlock Grid.Column="0" Grid.Row="4" Text="Производитель"/>
 				<TextBlock Grid.Column="0" Grid.Row="5" Text="Активный"/>
-				<TextBlock Grid.Column="0" Grid.Row="6" Text="Связанные товары" TextWrapping="Wrap"/>
+				<StackPanel Grid.Column="0" Grid.Row="6">
+					<TextBlock Text="Связанные товары" TextWrapping="Wrap"/>
+					<Button IsVisible="False" Name="DeleteExtra" Content="Удалить выбранный" Click="Delete"/>
+				</StackPanel>
 				<TextBlock Grid.Column="1" Grid.Row="0" Name="Id"/>
 				<TextBox Grid.Column="1" Grid.Row="1" Name="Name"/>
 				<TextBox Grid.Column="1" Grid.Row="2" Name="Cost" TextChanged="CostTextChanged"/>
@@ -32,11 +38,19 @@
 				<ComboBox Grid.Column="1" Grid.Row="4" Name="Man" HorizontalAlignment="Stretch"/>
 				<CheckBox Grid.Column="1" Grid.Row="5" Name="IsActive" VerticalAlignment="Top"/>
 				<DockPanel Grid.Row="6" Grid.Column="1">
-					<StackPanel DockPanel.Dock="Right">
-						<TextBlock Text="Добавить связанный товар"/>
-						<ComboBox Name="Available"/>
-					</StackPanel>
-					<ListBox DockPanel.Dock="Left" Name="Extra" Margin="5"   HorizontalAlignment="Stretch">
+					<DockPanel DockPanel.Dock="Right">
+						<TextBlock DockPanel.Dock="Top" Text="Выберите товар для связки"/>
+						<Button Click="AddExtra" HorizontalAlignment="Right" DockPanel.Dock="Bottom" Content="Добавить связанный товар" />
+						<ComboBox MaxWidth="200" DockPanel.Dock="Top"  SelectionChanged="ExtraChoosed" Name="Available">
+							<ComboBox.ItemTemplate>
+								<DataTemplate>
+									<TextBlock Text="{Binding Title}"/>
+								</DataTemplate>
+							</ComboBox.ItemTemplate>
+						</ComboBox>
+						<Image  Name="ExtraImage" DockPanel.Dock="Top"/>
+					</DockPanel>
+					<ListBox SelectionChanged="ListBox_SelectionChanged_1" DockPanel.Dock="Left" Name="Extra" Margin="5"   HorizontalAlignment="Stretch">
 						<ListBox.ItemsPanel>
 							<ItemsPanelTemplate>
 								<VirtualizingStackPanel Orientation="Horizontal" />
@@ -44,8 +58,8 @@
 						</ListBox.ItemsPanel>
 						<ListBox.ItemTemplate>
 							<DataTemplate>
-								<Grid ColumnDefinitions="*,*,*,*" RowDefinitions="*,*,*,*">
-									<Border ToolTip.Tip="" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Grid.RowSpan="2">
+								<Grid  ColumnDefinitions="*,*,*,*" RowDefinitions="*,*,*,*">
+									<Border Tag="{Binding Id}" DoubleTapped="ExtraTapped" ToolTip.Tip="" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" Grid.RowSpan="2">
 										<ToolTip.Tip>
 											<StackPanel>
 												<TextBlock Text="{Binding Title}"/>

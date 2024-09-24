@@ -48,5 +48,37 @@ namespace Demo3
             new EditWindow(Int32.Parse((sender as Border).Tag.ToString())).Show();
             this.Close();
         }
+
+        private void Delete(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            try
+            {
+                Actions.PublicContext.Products.Remove(ProductList.SelectedItem as Product);
+                Actions.PublicContext.SaveChanges();
+            }
+            catch { }
+            Filtr.SelectedIndex = 0;
+            Sort.SelectedIndex = 0;
+            Search.Text = "";
+        }
+
+        private void ListBox_SelectionChanged_1(object? sender, Avalonia.Controls.SelectionChangedEventArgs e)
+        {
+            if (ProductList.SelectedItem != null)
+            {
+                DeleteButton.IsVisible = true;
+            }
+            else
+            {
+                DeleteButton.IsVisible = false;
+            }
+        }
+
+        private void TextBox_TextChanged(object? sender, Avalonia.Controls.TextChangedEventArgs e)
+        {
+            search = Search.Text;
+            Actions.ChangeProductList(search, filtr, sort);
+            Update();
+        }
     }
 }

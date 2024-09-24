@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Demo3.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,41 +23,72 @@ public partial class EditWindow : Window
     public EditWindow()
     {
         InitializeComponent();
+        SalesButton.IsVisible = false;
+        Actions.Path.Add(-1);
         Man.ItemsSource = manf;
         Available.ItemsSource = Actions.PublicContext.Products.Where(p => p.Isactive == 1);
     }
     public EditWindow(int id)
     {
+        Product product;
         index = id;
         InitializeComponent();
         Man.ItemsSource = manf;
-
-        Product product = Actions.PublicContext.Products.FirstOrDefault(p => p.Id == index);
-
+        if (Actions.Path.Count() == 0 || Actions.Path.Last() != id)
+        {
+            Actions.Path.Add(id);
+        }
+        if (Actions.Path.Last() == -1)
+        {
+            product = Actions.ProductToAdd;
+            SalesButton.IsVisible = false;
+        }
+        else
+        {
+            product = Actions.PublicContext.Products.FirstOrDefault(p => p.Id == index);
+        }
+        IsActive.IsChecked =  product.Isactive == 1;
         Id.Text = id.ToString();
         Name.Text = product.Title;
         Cost.Text = product.Cost.ToString();
         Desc.Text = product.Description;
         Image.Source = product.Image;
-        Man.SelectedIndex = manf.IndexOf(Actions.PublicContext.Manufacturers.FirstOrDefault(m => m.Id == product.Manufacturerid).Name);
-        ExtraProducts = Actions.Products.FirstOrDefault(p => p.Id == id).Attachedproducts.ToList();
+        if (Actions.PublicContext.Manufacturers.FirstOrDefault(m => m.Id == product.Manufacturerid) != null)
+        {
+            Man.SelectedIndex = manf.IndexOf(Actions.PublicContext.Manufacturers.FirstOrDefault(m => m.Id == product.Manufacturerid).Name);
+        }
+        if (index != -1)
+        {
+            ExtraProducts = Actions.PublicContext.Products.Include(x => x.Attachedproducts).FirstOrDefault(p => p.Id == id).Attachedproducts.ToList();
+        }
+        else
+        {
+            ExtraProducts = Actions.ProductToAdd.Attachedproducts.ToList();
+        }
         Extra.ItemsSource = ExtraProducts;
-        Available.ItemsSource = Actions.PublicContext.Products.Where(p => p.Isactive == 1 && p.Id!= index);
+        Available.ItemsSource = Actions.PublicContext.Products.Where(p => p.Isactive == 1 && p.Id != index);
     }
 
     private void Comfirm(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         if (!string.IsNullOrEmpty(Name.Text) && !string.IsNullOrEmpty(Cost.Text) && Man.SelectedIndex != null)
         {
+            if (string.IsNullOrEmpty(Desc.Text))
+            {
+                Desc.Text = "";
+            }
             if (index == -1)
             {
                 Product product = new Product() { Title = Name.Text, Cost = decimal.Parse(Cost.Text), Description = Desc.Text, 
                     Manufacturerid = Actions.PublicContext.Manufacturers.FirstOrDefault(m => m.Name == manf[Man.SelectedIndex]).Id, 
-                    Isactive = (Convert.ToInt32(IsActive.IsChecked) + 1) * -1 + 3, Mainimagepath = _imageName
+                    Isactive = (Convert.ToInt32(IsActive.IsChecked) + 1) * -1 + 3, Attachedproducts = ExtraProducts
                 };
             
                 if (_imagePath != "")
+                {
                     File.Copy(_imagePath, Environment.CurrentDirectory + "/" + _imageName);
+                    product.Mainimagepath = _imageName;
+                }
                 Actions.PublicContext.Products.Add(product);
                 Actions.PublicContext.SaveChanges();
             }
@@ -67,15 +99,28 @@ public partial class EditWindow : Window
                 product.Cost = decimal.Parse(Cost.Text);
                 product.Description  = Desc.Text;
                 product.Manufacturerid = Actions.PublicContext.Manufacturers.FirstOrDefault(m => m.Name == manf[Man.SelectedIndex]).Id;
-                product.Mainimagepath = _imageName;
                 product.Isactive = (Convert.ToInt32(IsActive.IsChecked) + 1) * -1 + 3;
                 if (_imagePath != "")
-                    File.Copy(_imagePath, Environment.CurrentDirectory + "/" + _imageName);
+                {
+                    File.Copy(_imagePath, Environment.CurrentDirectory + "/" + _imageName); 
+                    product.Mainimagepath = _imageName;
+                }
                 Actions.PublicContext.Products.Update(product);
                 Actions.PublicContext.SaveChanges();
             }
-            new MainWindow().Show();
-            this.Close();
+            if (Actions.Path.Count() == 1)
+            {
+                Actions.Path.Clear();
+                new MainWindow().Show();
+                this.Close();
+            }
+            else
+            {
+                Actions.Path.RemoveAt(Actions.Path.Count()-1);
+                new EditWindow(Actions.Path.Last()).Show();
+                Close();
+            }
+
         }
     }
 
@@ -105,5 +150,110 @@ public partial class EditWindow : Window
         {
             (sender as TextBox).Text = cost;
         }
+    }
+
+    private void ExtraChoosed(object? sender, Avalonia.Controls.SelectionChangedEventArgs e)
+    {
+        if ((sender as ComboBox).SelectedItem != null)
+        {
+            Product product = (sender as ComboBox).SelectedItem as Product;
+            ExtraImage.Source = product.Image;
+        }
+    }
+
+    private void AddExtra(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (Available.SelectedItem != null)
+        {
+            ExtraProducts.Add(Available.SelectedItem as Product);
+            Extra.ItemsSource = ExtraProducts.ToList();
+            ExtraImage.Source = null;
+            if (index != -1)
+            {
+                Product pr = Actions.PublicContext.Products.FirstOrDefault(p => p.Id == index);
+                pr.Attachedproducts.Add((Available.SelectedItem as Product));
+                Actions.PublicContext.Update(pr);
+                Actions.PublicContext.SaveChanges();
+            }
+            Available.SelectedIndex = -1;
+        }
+    }
+
+    private void ExtraTapped(object? sender, Avalonia.Input.TappedEventArgs e)
+    {
+        if ((sender as Border).Tag != null)
+        {
+            if (index == -1)
+            {
+                Product product = new Product();
+                product.Title = Name.Text;
+                try
+                {
+                    product.Cost = decimal.Parse(Cost.Text);
+                }
+                catch
+                {}
+                product.Description = Desc.Text;
+                try
+                {
+                    product.Manufacturerid = Actions.PublicContext.Manufacturers.FirstOrDefault(m => m.Name == manf[Man.SelectedIndex]).Id;
+                }
+                catch
+                { }
+                product.Attachedproducts = ExtraProducts;
+                product.Isactive = (Convert.ToInt32(IsActive.IsChecked) + 1) * -1 + 3;
+                if (_imagePath != "")
+                {
+                    File.Copy(_imagePath, Environment.CurrentDirectory + "/" + _imageName);
+                    product.Mainimagepath = _imageName;
+                }
+                Actions.ProductToAdd = product;
+            }
+            new EditWindow(Int32.Parse((sender as Border).Tag.ToString())).Show();
+            this.Close();
+        }
+    }
+
+    private void Exit(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        Actions.Path.Clear();
+        new MainWindow().Show();
+        this.Close();
+    }
+
+    private void ListBox_SelectionChanged_1(object? sender, Avalonia.Controls.SelectionChangedEventArgs e)
+    {
+        if (Extra.SelectedItem != null)
+        {
+            DeleteExtra.IsVisible = true;
+        }
+        else
+        {
+            DeleteExtra.IsVisible = false;
+        }
+    }
+
+    private void Delete(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (index == -1)
+        {
+            ExtraProducts.Remove(Extra.SelectedItem as Product);
+            Extra.ItemsSource = ExtraProducts.ToList();
+        }
+        else
+        {
+            Product pr = Actions.PublicContext.Products.FirstOrDefault(p => p.Id == index);
+            pr.Attachedproducts.Remove((Extra.SelectedItem as Product));
+            Actions.PublicContext.Update(pr);
+            Actions.PublicContext.SaveChanges();
+            ExtraProducts = Actions.PublicContext.Products.Include(x => x.Attachedproducts).FirstOrDefault(p => p.Id == index).Attachedproducts.ToList();
+            Extra.ItemsSource = ExtraProducts.ToList();
+        }
+    }
+
+    private void Button_Click_1(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        new Sales(index).Show();
+        this.Close();
     }
 }

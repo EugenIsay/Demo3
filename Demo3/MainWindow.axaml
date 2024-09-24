@@ -5,10 +5,13 @@
         mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
 		WindowStartupLocation="CenterOwner"
         x:Class="Demo3.MainWindow"
+		Background="#ffffff"
+		WindowState="Maximized"
         Title="Demo3">
 	<DockPanel>
 		<Button DockPanel.Dock="Bottom" Content="Добавить товар" Click="Add"/>
-		<TextBox Name="Search" DockPanel.Dock="Top" HorizontalAlignment="Stretch"/>
+		<Button DockPanel.Dock="Bottom" Content="Удалить товар" Click="Delete" Name="DeleteButton" IsVisible="False"/>
+		<TextBox Name="Search" DockPanel.Dock="Top" HorizontalAlignment="Stretch" TextChanged="TextBox_TextChanged"/>
 		<Grid DockPanel.Dock="Top" ColumnDefinitions="*,*,*">
 			<TextBlock Name="Amount" Grid.Column="0"/>
 			<ComboBox SelectionChanged="SelectionChanged" Name="Filtr" HorizontalAlignment="Stretch" Grid.Column="1"/>
@@ -19,7 +22,7 @@
 			</ComboBox>
 		</Grid>
 
-		<ListBox Margin="5" DockPanel.Dock="Top" Name="ProductList">
+		<ListBox SelectionChanged="ListBox_SelectionChanged_1" Margin="5" DockPanel.Dock="Top" Name="ProductList">
 			<ListBox.ItemsPanel>
 				<ItemsPanelTemplate>
 					<WrapPanel Orientation="Horizontal" />

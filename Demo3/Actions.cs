@@ -1,4 +1,5 @@
-﻿using Demo3.Context;
+﻿using Avalonia.Controls.ApplicationLifetimes;
+using Demo3.Context;
 using Demo3.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -11,6 +12,8 @@ namespace Demo3
 {
     public static class Actions
     {
+        public static List<int> Path = new List<int>();
+        public static Product ProductToAdd;
         public static IsajkinContext PublicContext = new IsajkinContext();
         public static List<Product> Products = PublicContext.Products.Include(x=>x.Attachedproducts).ToList();
         public static List<string> Manufacturers = new List<string>(){"Все элементы"}.Concat(PublicContext.Manufacturers.Select(m => m.Name)).ToList(); 
